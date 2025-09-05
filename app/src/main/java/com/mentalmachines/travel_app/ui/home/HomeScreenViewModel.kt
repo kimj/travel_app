@@ -1,4 +1,4 @@
-package com.mentalmachines.travel_app.ui.main
+package com.mentalmachines.travel_app.ui.home
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,13 +18,13 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class MainScreenViewModel @Inject constructor(
+class HomeScreenViewModel @Inject constructor(
     private val detailsRepository: DetailsRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     private val username: String? = savedStateHandle[Argument.USERNAME]
-    var uiState by mutableStateOf(`MainScreenUiState.kt`())
+    var uiState by mutableStateOf(HomeScreenUiState())
         private set
 
 
