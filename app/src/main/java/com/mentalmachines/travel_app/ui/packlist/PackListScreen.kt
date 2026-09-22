@@ -14,7 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 
 // ============================================================================
@@ -28,7 +27,7 @@ data class PackItemTemplate(
 )
 
 // ============================================================================
-// ATOMS: Basic building blocks
+// ATOMS
 // ============================================================================
 
 @Composable
@@ -52,7 +51,7 @@ fun ItemNameText(
 ) {
     Text(
         text = text,
-        fontSize = 16.sp,
+        style = MaterialTheme.typography.bodyLarge,
         fontWeight = FontWeight.Medium,
         color = if (isPacked) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f) else MaterialTheme.colorScheme.onSurface,
         modifier = modifier
@@ -66,7 +65,7 @@ fun ItemQuantityText(
 ) {
     Text(
         text = "Qty: $quantity",
-        fontSize = 14.sp,
+        style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.secondary,
         fontWeight = FontWeight.SemiBold,
         modifier = modifier
@@ -80,15 +79,14 @@ fun CategoryTitleText(
 ) {
     Text(
         text = text,
-        fontSize = 18.sp,
-        fontWeight = FontWeight.Bold,
+        style = MaterialTheme.typography.titleMedium,
         color = MaterialTheme.colorScheme.primary,
         modifier = modifier
     )
 }
 
 // ============================================================================
-// MOLECULES: Group of atoms bonded together
+// MOLECULES
 // ============================================================================
 
 @Composable
@@ -114,7 +112,7 @@ fun PackListItemRow(
 }
 
 // ============================================================================
-// ORGANISMS: Complex UI components composed of molecules and atoms
+// ORGANISMS
 // ============================================================================
 
 @Composable
@@ -150,7 +148,7 @@ fun PackCategorySection(
 }
 
 // ============================================================================
-// TEMPLATES: Page-level layout focusing on content structure
+// TEMPLATES
 // ============================================================================
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -168,7 +166,7 @@ fun PackListContentTemplate(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = { Text("Trip Packing List", fontWeight = FontWeight.Bold) },
+                title = { Text("Trip Packing List", style = MaterialTheme.typography.titleLarge) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -195,8 +193,8 @@ fun PackListContentTemplate(
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
                         text = "How many days is your trip?",
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 15.sp
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     Row(
@@ -204,16 +202,15 @@ fun PackListContentTemplate(
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         Button(onClick = { if (days > 1) onDaysChange(days - 1) }) {
-                            Text("-", fontSize = 18.sp)
+                            Text("-", style = MaterialTheme.typography.titleMedium)
                         }
                         Text(
                             text = "$days Days",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.primary
                         )
                         Button(onClick = { onDaysChange(days + 1) }) {
-                            Text("+", fontSize = 18.sp)
+                            Text("+", style = MaterialTheme.typography.titleMedium)
                         }
                     }
                 }
@@ -243,7 +240,7 @@ fun PackListContentTemplate(
 }
 
 // ============================================================================
-// PAGES: Specific instance injected with data/state
+// PAGES
 // ============================================================================
 
 @Composable

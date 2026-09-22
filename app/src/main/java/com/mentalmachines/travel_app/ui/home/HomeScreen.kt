@@ -12,15 +12,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.mentalmachines.travel_app.ui.theme.TravelAppTheme
 
 // ============================================================================
-// DATA MODEL (UI specific extension for illustration)
+// DATA MODEL
 // ============================================================================
 data class TripUiModel(
     val id: String,
@@ -30,7 +29,7 @@ data class TripUiModel(
 )
 
 // ============================================================================
-// ATOMS: Basic building blocks
+// ATOMS
 // ============================================================================
 
 @Composable
@@ -39,13 +38,12 @@ fun LocationImage(
     contentDescription: String?,
     modifier: Modifier = Modifier
 ) {
+    val gradientColors = listOf(
+        MaterialTheme.colorScheme.tertiary,
+        MaterialTheme.colorScheme.primary
+    )
     Box(
-        modifier = modifier
-            .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(Color(0xFF42A5F5), Color(0xFF0D47A1))
-                )
-            )
+        modifier = modifier.background(brush = Brush.linearGradient(colors = gradientColors))
     )
 }
 
@@ -57,8 +55,7 @@ fun LocationTitleText(
     Text(
         text = text,
         color = Color.White,
-        fontSize = 20.sp,
-        fontWeight = FontWeight.Bold,
+        style = MaterialTheme.typography.titleLarge,
         modifier = modifier
     )
 }
@@ -71,14 +68,13 @@ fun LocationDateText(
     Text(
         text = text,
         color = Color.White.copy(alpha = 0.85f),
-        fontSize = 14.sp,
-        fontWeight = FontWeight.Normal,
+        style = MaterialTheme.typography.bodyMedium,
         modifier = modifier
     )
 }
 
 // ============================================================================
-// MOLECULES: Group of atoms bonded together
+// MOLECULES
 // ============================================================================
 
 @Composable
@@ -92,7 +88,7 @@ fun LocationDetailsOverlay(
             .fillMaxWidth()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.7f))
+                    colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.75f))
                 )
             )
             .padding(16.dp),
@@ -104,7 +100,7 @@ fun LocationDetailsOverlay(
 }
 
 // ============================================================================
-// ORGANISMS: Complex UI components composed of molecules and atoms
+// ORGANISMS
 // ============================================================================
 
 @Composable
@@ -154,7 +150,7 @@ fun HorizontalTripRow(
 }
 
 // ============================================================================
-// TEMPLATES: Page-level layout focusing on content structure
+// TEMPLATES
 // ============================================================================
 
 @Composable
@@ -179,7 +175,7 @@ fun HomeContentTemplate(
             Text(
                 text = "Explore Destinations",
                 style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold
+                color = MaterialTheme.colorScheme.onBackground
             )
             Button(onClick = onPackListClick) {
                 Text("Pack List")
@@ -190,7 +186,7 @@ fun HomeContentTemplate(
 }
 
 // ============================================================================
-// PAGES: Specific instance injected with data/state
+// PAGES
 // ============================================================================
 
 @Composable
@@ -216,7 +212,7 @@ fun HomeScreen(navController: NavController) {
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
-    MaterialTheme {
+    TravelAppTheme {
         HomeScreen(rememberNavController())
     }
 }

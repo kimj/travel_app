@@ -16,8 +16,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.mentalmachines.travel_app.ui.theme.TravelAmber
+import com.mentalmachines.travel_app.ui.theme.TravelMint
+import com.mentalmachines.travel_app.ui.theme.TravelMintLight
 
 // ============================================================================
 // DATA MODELS
@@ -34,7 +36,7 @@ data class InterestPlace(
 )
 
 // ============================================================================
-// ATOMS: Basic building blocks
+// ATOMS
 // ============================================================================
 
 @Composable
@@ -68,7 +70,7 @@ fun RatingBadge(
 ) {
     Row(
         modifier = modifier
-            .background(Color(0xFFFFB300), shape = RoundedCornerShape(6.dp))
+            .background(TravelAmber, shape = RoundedCornerShape(6.dp))
             .padding(horizontal = 6.dp, vertical = 2.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(2.dp)
@@ -82,8 +84,7 @@ fun RatingBadge(
         Text(
             text = rating.toString(),
             color = Color.White,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Bold
+            style = MaterialTheme.typography.labelSmall
         )
     }
 }
@@ -96,8 +97,7 @@ fun PricePointText(
     Text(
         text = price,
         color = MaterialTheme.colorScheme.secondary,
-        fontSize = 14.sp,
-        fontWeight = FontWeight.Bold,
+        style = MaterialTheme.typography.titleSmall,
         modifier = modifier
     )
 }
@@ -109,8 +109,7 @@ fun DescriptorTagChip(
 ) {
     Text(
         text = tag,
-        fontSize = 11.sp,
-        fontWeight = FontWeight.Medium,
+        style = MaterialTheme.typography.labelSmall,
         color = MaterialTheme.colorScheme.onPrimaryContainer,
         modifier = modifier
             .background(
@@ -122,7 +121,7 @@ fun DescriptorTagChip(
 }
 
 // ============================================================================
-// MOLECULES: Group of atoms bonded together
+// MOLECULES
 // ============================================================================
 
 @Composable
@@ -134,13 +133,12 @@ fun PlaceCardHeader(
     Column(modifier = modifier) {
         Text(
             text = name,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurface
         )
         Text(
             text = foodType,
-            fontSize = 14.sp,
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
@@ -163,7 +161,7 @@ fun PlaceMetaRow(
 }
 
 // ============================================================================
-// ORGANISMS: Complex UI components composed of molecules and atoms
+// ORGANISMS
 // ============================================================================
 
 @Composable
@@ -202,7 +200,7 @@ fun InteractiveMapViewContainer(
             .fillMaxWidth()
             .background(
                 brush = Brush.linearGradient(
-                    colors = listOf(Color(0xFFE8F5E9), Color(0xFFC8E6C9))
+                    colors = listOf(TravelMintLight, TravelMint)
                 )
             )
     ) {
@@ -221,7 +219,7 @@ fun InteractiveMapViewContainer(
 }
 
 // ============================================================================
-// TEMPLATES: Page-level layout focusing on content structure
+// TEMPLATES
 // ============================================================================
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -274,7 +272,7 @@ fun MapExploreContentTemplate(
 }
 
 // ============================================================================
-// PAGES: Specific instance injected with data/state
+// PAGES
 // ============================================================================
 
 @Composable

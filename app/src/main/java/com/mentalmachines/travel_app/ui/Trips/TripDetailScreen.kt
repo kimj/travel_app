@@ -13,7 +13,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.mentalmachines.travel_app.ui.home.LocationImage
 import com.mentalmachines.travel_app.ui.home.LocationDetailsOverlay
 
@@ -27,7 +26,7 @@ data class ItineraryItem(
 )
 
 // ============================================================================
-// ATOMS: Basic building blocks
+// ATOMS
 // ============================================================================
 
 @Composable
@@ -37,7 +36,7 @@ fun ItineraryTitleText(
 ) {
     Text(
         text = text,
-        fontSize = 16.sp,
+        style = MaterialTheme.typography.bodyLarge,
         fontWeight = FontWeight.SemiBold,
         color = MaterialTheme.colorScheme.onSurface,
         modifier = modifier
@@ -51,9 +50,8 @@ fun ItineraryTimeText(
 ) {
     Text(
         text = text,
-        fontSize = 14.sp,
+        style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.primary,
-        fontWeight = FontWeight.Medium,
         modifier = modifier
     )
 }
@@ -65,14 +63,14 @@ fun SectionHeader(
 ) {
     Text(
         text = text,
-        fontSize = 18.sp,
-        fontWeight = FontWeight.Bold,
+        style = MaterialTheme.typography.titleMedium,
+        color = MaterialTheme.colorScheme.onBackground,
         modifier = modifier
     )
 }
 
 // ============================================================================
-// MOLECULES: Group of atoms bonded together
+// MOLECULES
 // ============================================================================
 
 @Composable
@@ -90,7 +88,7 @@ fun ItineraryItemContent(
 }
 
 // ============================================================================
-// ORGANISMS: Complex UI components composed of molecules and atoms
+// ORGANISMS
 // ============================================================================
 
 @Composable
@@ -129,7 +127,7 @@ fun ItineraryList(
 }
 
 // ============================================================================
-// TEMPLATES: Page-level layout focusing on content structure
+// TEMPLATES
 // ============================================================================
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -146,7 +144,7 @@ fun TripDetailContentTemplate(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = { Text("Trip Itinerary", fontWeight = FontWeight.Bold) },
+                title = { Text("Trip Itinerary", style = MaterialTheme.typography.titleLarge) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
@@ -206,7 +204,7 @@ fun TripDetailContentTemplate(
 }
 
 // ============================================================================
-// PAGES: Specific instance injected with data/state
+// PAGES
 // ============================================================================
 
 @Composable
@@ -215,7 +213,6 @@ fun TripDetailScreen(
     onExploreMapClick: () -> Unit,
     onBackClick: () -> Unit
 ) {
-    // Dynamic mock data mapping
     val destinationName = when(tripId) {
         "1" -> "Paris, France"
         "2" -> "Tokyo, Japan"
