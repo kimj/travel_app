@@ -1,0 +1,89 @@
+package com.mentalmachines.travel_app.ui.Trips
+
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.mentalmachines.travel_app.database.Resource
+import com.mentalmachines.travel_app.domain.Trip
+// import com.mentalmachines.TravelApp.repository.DetailsRepository
+import com.mentalmachines.travel_app.ui.Argument
+import com.mentalmachines.travel_app.repository.DetailsRepository
+import com.mentalmachines.travel_app.repository.TripRepository
+import com.mentalmachines.travel_app.ui.details.DetailsUiState
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
+
+@HiltViewModel
+class TripDetailViewModel @Inject constructor(
+    private val detailsRepository: DetailsRepository,
+    savedStateHandle: SavedStateHandle,
+) : ViewModel() {
+
+    private val username: String? = savedStateHandle[Argument.USERNAME]
+    var uiState by mutableStateOf(DetailsUiState())
+        private set
+
+
+    sealed interface UiEvent {
+        data class ShowSnackbar(val message: String) : UiEvent
+        data class NavigateTo(val route: String) : UiEvent
+    }
+
+    private val _events = Channel<UiEvent>(Channel.BUFFERED)
+    val events = _events.receiveAsFlow()
+
+    fun onSaveClicked(id: String) = viewModelScope.launch {
+        detailsRepository.save(id)                         // business logic
+        _events.send(UiEvent.ShowSnackbar("Saved"))
+        _events.send(UiEvent.NavigateTo("details/$id"))
+    }
+
+    init {
+        username?.let {
+            viewModelScope.launch(Dispatchers.IO) {
+                detailsRepository.refreshDetails(it)
+                detailsRepository.getUserDetails(it).collect { detail ->
+                    withContext(Dispatchers.Main) {
+                        uiState = if (detail == null) {
+                            uiState.copy(offline = true)
+                        } else {
+                            uiState.copy(
+                                detail = detail,
+                                offline = false
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+class TripViewModel(private val repository: TripRepository) : ViewModel() {
+
+    private val _tripsState = MutableStateFlow<Resource<List<Trip>>>(Resource.Loading)
+    val tripsState = _tripsState.asStateFlow()
+
+    init {
+        fetchTrips()
+    }
+
+    fun fetchTrips() {
+        viewModelScope.launch {
+            repository.getAllTrips().collect { result ->
+                _tripsState.value = result
+            }
+        }
+    }
+}

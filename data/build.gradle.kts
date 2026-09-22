@@ -2,26 +2,20 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.devtools.ksp)
 }
 
 android {
-    namespace = "com.mentalmachines.travel_app"
+    namespace = "com.mentalmachines.travel_app.data"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.mentalmachines.travel_app"
         minSdk = 25
-        targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -46,47 +40,20 @@ android {
     }
 
     buildFeatures {
-        compose = true
         buildConfig = true
-    }
-
-    packaging {
-        resources {
-            excludes += "/META-INF/gradle/incremental.annotation.processors"
-        }
     }
 }
 
 dependencies {
-    implementation(project(":data"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
-
-    implementation(libs.androidx.navigation.navigation.compose)
     implementation(libs.androidx.appcompat)
-    implementation(libs.ui.graphics)
-    implementation(libs.material3)
-    implementation(libs.androidx.compose.material3)
-
-    // implementation(libs.androidx.room.compiler.processing.testing)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation(libs.hilt.android)
-    implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.hilt.compiler)
 
     implementation(libs.androidx.room.runtime)

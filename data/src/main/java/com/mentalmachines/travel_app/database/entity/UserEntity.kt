@@ -3,10 +3,10 @@ package com.mentalmachines.travel_app.database.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.mentalmachines.compose.domain.User
+import com.mentalmachines.travel_app.domain.User
 
 
-@Entity
+@Entity(tableName = "users")
 data class UserEntity(
     @PrimaryKey
     val id: Int,

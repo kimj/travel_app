@@ -1,4 +1,4 @@
-package com.mentalmachines.compose.di
+package com.mentalmachines.travel_app.di
 
 import android.content.Context
 import androidx.room.Room

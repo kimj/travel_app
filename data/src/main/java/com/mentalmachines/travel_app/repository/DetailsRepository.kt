@@ -3,7 +3,10 @@ package com.mentalmachines.travel_app.repository
 
 import com.mentalmachines.travel_app.domain.Details
 import com.mentalmachines.travel_app.database.AppDatabase
+import com.mentalmachines.travel_app.database.entity.DetailsEntity
+import com.mentalmachines.travel_app.database.entity.UserEntity
 import com.mentalmachines.travel_app.database.entity.asDomainModel
+import kotlinx.coroutines.Dispatchers
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -16,16 +19,18 @@ class DetailsRepository @Inject constructor(
     private val appDatabase: AppDatabase
 ) {
     interface DetailsApi {
-        fun getDetails(){}
+        fun getDetails(user: String)  : DetailsEntity{
+            return TODO("Provide the return value")
+        }
     }
 
     fun getUserDetails(user: String): Flow<Details?> =
             appDatabase.usersDao.getDetails(user).map { it?.asDomainModel() }
 
-    suspend fun refreshDetails(user: String) {
+    fun refreshDetails(user: String) {
         try {
-            /*val userDetails = detailsApi.getDetails(user)
-            appDatabase.usersDao.insertDetails(userDetails)*/
+            val userDetails : DetailsEntity = detailsApi.getDetails(user)
+            appDatabase.usersDao.insertDetails(userDetails)
 
         } catch (e: Exception) {
             Timber.w(e)

@@ -5,7 +5,7 @@ import com.mentalmachines.travel_app.ui.details.DetailsScreen
 
 
 @Composable
-fun ComposeApp() {
+fun TravelApp() {
     DetailsScreen()
 }
 

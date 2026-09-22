@@ -1,6 +1,6 @@
 package com.mentalmachines.travel_app.di
 
-import com.mentalmachines.travel_app.BuildConfig
+import com.mentalmachines.travel_app.data.BuildConfig
 import com.mentalmachines.travel_app.repository.DetailsRepository
 import com.mentalmachines.travel_app.repository.UsersRepository
 import dagger.Module

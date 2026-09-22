@@ -1,4 +1,4 @@
-package com.anirudh.mvvmcleancodeapp.feature.presentation.screens.featureScreen
+package com.mentalmachines.travel_app.ui.featureScreen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

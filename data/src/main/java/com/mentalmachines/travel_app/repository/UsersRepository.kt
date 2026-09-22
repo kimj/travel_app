@@ -1,7 +1,7 @@
 package com.mentalmachines.travel_app.repository
 
 
-import com.mentalmachines.compose.domain.User
+import com.mentalmachines.travel_app.domain.User
 import com.mentalmachines.travel_app.database.AppDatabase
 import com.mentalmachines.travel_app.database.entity.UserEntity
 import kotlinx.coroutines.flow.Flow
