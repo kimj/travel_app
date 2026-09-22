@@ -1,148 +1,236 @@
 package com.mentalmachines.travel_app.ui.Trips
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.mentalmachines.travel_app.R
-import com.mentalmachines.travel_app.ui.theme.H2
-import com.mentalmachines.travel_app.ui.theme.H3
-import com.mentalmachines.travel_app.ui.theme.body
-import com.mentalmachines.travel_app.ui.theme.bodyBold
-import com.mentalmachines.travel_app.ui.theme.buttonText
-import com.mentalmachines.travel_app.ui.theme.captionDefault
-import com.mentalmachines.travel_app.ui.theme.currency
-import com.mentalmachines.travel_app.ui.theme.price
+import androidx.compose.ui.unit.sp
+import com.mentalmachines.travel_app.ui.home.LocationImage
+import com.mentalmachines.travel_app.ui.home.LocationDetailsOverlay
 
+// ============================================================================
+// DATA MODELS
+// ============================================================================
+data class ItineraryItem(
+    val id: String,
+    val stopLocation: String,
+    val timeRange: String
+)
+
+// ============================================================================
+// ATOMS: Basic building blocks
+// ============================================================================
+
+@Composable
+fun ItineraryTitleText(
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        text = text,
+        fontSize = 16.sp,
+        fontWeight = FontWeight.SemiBold,
+        color = MaterialTheme.colorScheme.onSurface,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun ItineraryTimeText(
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        text = text,
+        fontSize = 14.sp,
+        color = MaterialTheme.colorScheme.primary,
+        fontWeight = FontWeight.Medium,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun SectionHeader(
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        text = text,
+        fontSize = 18.sp,
+        fontWeight = FontWeight.Bold,
+        modifier = modifier
+    )
+}
+
+// ============================================================================
+// MOLECULES: Group of atoms bonded together
+// ============================================================================
+
+@Composable
+fun ItineraryItemContent(
+    item: ItineraryItem,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        ItineraryTitleText(text = item.stopLocation)
+        ItineraryTimeText(text = item.timeRange)
+    }
+}
+
+// ============================================================================
+// ORGANISMS: Complex UI components composed of molecules and atoms
+// ============================================================================
+
+@Composable
+fun ItineraryCard(
+    item: ItineraryItem,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        )
+    ) {
+        ItineraryItemContent(
+            item = item,
+            modifier = Modifier.padding(16.dp)
+        )
+    }
+}
+
+@Composable
+fun ItineraryList(
+    itineraryList: List<ItineraryItem>,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(
+        modifier = modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        items(itineraryList, key = { it.id }) { item ->
+            ItineraryCard(item = item)
+        }
+    }
+}
+
+// ============================================================================
+// TEMPLATES: Page-level layout focusing on content structure
+// ============================================================================
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TripDetailContentTemplate(
+    destinationName: String,
+    datesText: String,
+    itineraryList: List<ItineraryItem>,
+    onBackClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Scaffold(
+        modifier = modifier,
+        topBar = {
+            TopAppBar(
+                title = { Text("Trip Itinerary", fontWeight = FontWeight.Bold) },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+            )
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .background(MaterialTheme.colorScheme.background)
+        ) {
+            // Reusing atoms and molecules from HomeScreen to match visuals precisely
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(220.dp)
+            ) {
+                LocationImage(
+                    imageUrl = "",
+                    contentDescription = destinationName,
+                    modifier = Modifier.fillMaxSize()
+                )
+                LocationDetailsOverlay(
+                    destination = destinationName,
+                    dates = datesText,
+                    modifier = Modifier.align(Alignment.BottomStart)
+                )
+            }
+
+            SectionHeader(
+                text = "Daily Schedule",
+                modifier = Modifier.padding(start = 16.dp, top = 20.dp, end = 16.dp, bottom = 8.dp)
+            )
+
+            ItineraryList(
+                itineraryList = itineraryList,
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
+
+// ============================================================================
+// PAGES: Specific instance injected with data/state
+// ============================================================================
 
 @Composable
 fun TripDetailScreen(
-    viewModel: TripDetailViewModel = hiltViewModel(),
-    onAction: (actions: DetailScreenActions) -> Unit
+    tripId: String,
+    onBackClick: () -> Unit
 ) {
-    Scaffold{ innerPadding ->
-        DetailScreenContent(modifier = Modifier.padding(innerPadding), onAction = onAction)
+    // Dynamic mock resolved data mapping
+    val destinationName = when(tripId) {
+        "1" -> "Paris, France"
+        "2" -> "Tokyo, Japan"
+        "3" -> "Rome, Italy"
+        else -> "New York, USA"
     }
-}
-
-@Composable
-private fun DetailScreenContent(
-    modifier: Modifier,
-    onAction: (actions: DetailScreenActions) -> Unit
-) {
-    Column(
-        modifier = modifier
-            .padding(start = 24.dp, end = 24.dp, top = 56.dp)
-            .fillMaxHeight()
-            .semantics { contentDescription = "Detail Screen" }
-    ) {
-        Image(
-            painterResource(id = R.drawable.img_detail), null, Modifier.clip(
-                RoundedCornerShape(10.dp)
-            )
-        )
-        Spacer(modifier = Modifier.size(16.dp))
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = "Lalakhal", style = MaterialTheme.typography.H2)
-            Spacer(modifier = Modifier.weight(1F))
-            Image(
-                painter = painterResource(id = R.drawable.star),
-                contentDescription = null,
-                Modifier.size(10.dp)
-            )
-            Spacer(modifier = Modifier.size(8.dp))
-            Text(text = "(4.8)", style = MaterialTheme.typography.captionDefault)
-        }
-        Spacer(modifier = Modifier.size(16.dp))
-        Text(
-            text = "To journey from place to place or to a distant place. To get around pass from one place to another the news traveled fast.",
-            style = MaterialTheme.typography.body,
-            modifier = Modifier.padding(horizontal = 12.dp)
-        )
-        Spacer(modifier = Modifier.size(16.dp))
-        MoreImages()
-        Spacer(modifier = Modifier.weight(1F))
-        Row(Modifier.fillMaxWidth()) {
-            Column {
-                Text(text = "Total Price", style = MaterialTheme.typography.H3)
-                Spacer(modifier = Modifier.size(12.dp))
-                Row {
-                    Text(text = "₹", style = MaterialTheme.typography.currency)
-                    Text(text = "3435", style = MaterialTheme.typography.price)
-                }
-            }
-            Spacer(modifier = Modifier.weight(1F))
-            Button(
-                onClick = {},
-                modifier = Modifier.padding(bottom = 56.dp).size(170.dp, 56.dp),
-                shape = RoundedCornerShape(72.dp),
-                colors = ButtonDefaults.buttonColors()
-            ) {
-                Text(text = "Book Now", style = MaterialTheme.typography.buttonText)
-            }
-        }
+    val datesText = when(tripId) {
+        "1" -> "Oct 12 - Oct 19"
+        "2" -> "Nov 02 - Nov 12"
+        "3" -> "Dec 05 - Dec 10"
+        else -> "Jan 15 - Jan 18"
     }
-}
 
-@Composable
-private fun MoreImages() {
-    Spacer(modifier = Modifier.size(24.dp))
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 12.dp)) {
-        Text(text = "More Images", style = MaterialTheme.typography.bodyBold)
-        Spacer(modifier = Modifier.size(16.dp))
-        Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
-            Image(
-                painter = painterResource(id = R.drawable.more_1),
-                contentDescription = null,
-                modifier = Modifier.size(70.dp)
-            )
-            Image(
-                painter = painterResource(id = R.drawable.more_2),
-                contentDescription = null,
-                modifier = Modifier.size(70.dp)
-            )
-            Image(
-                painter = painterResource(id = R.drawable.more_3),
-                contentDescription = null,
-                modifier = Modifier.size(70.dp)
-            )
-            Image(
-                painter = painterResource(id = R.drawable.more_4),
-                contentDescription = null,
-                modifier = Modifier.size(70.dp)
-            )
-        }
-    }
-}
+    val itineraryList = listOf(
+        ItineraryItem("1", "Morning Flight & Hotel Check-in", "08:00 AM - 01:00 PM"),
+        ItineraryItem("2", "Local City Center Guided Walk", "03:00 PM - 06:00 PM"),
+        ItineraryItem("3", "Welcome Dinner at Historic Bistro", "07:30 PM - 09:30 PM"),
+        ItineraryItem("4", "Museum & Landmark Sightseeing Tour", "09:00 AM - 02:00 PM")
+    )
 
-
-sealed class DetailScreenActions {
-    object Back : DetailScreenActions()
+    TripDetailContentTemplate(
+        destinationName = destinationName,
+        datesText = datesText,
+        itineraryList = itineraryList,
+        onBackClick = onBackClick
+    )
 }
