@@ -13,6 +13,7 @@ import androidx.navigation.navArgument
 import com.mentalmachines.travel_app.ui.home.HomeScreen
 import com.mentalmachines.travel_app.ui.Trips.TripDetailScreen
 import com.mentalmachines.travel_app.ui.packlist.PackListScreen
+import com.mentalmachines.travel_app.ui.map.MapExploreScreen
 
 @Composable
 fun Navigation() {
@@ -46,9 +47,15 @@ fun Navigation() {
             }
         ) { backStackEntry ->
             val tripId = backStackEntry.arguments?.getString("tripId").orEmpty()
-            TripDetailScreen(tripId = tripId) {
-                navController.popBackStack()
-            }
+            TripDetailScreen(
+                tripId = tripId,
+                onExploreMapClick = {
+                    navController.navigate(Screens.MapExplore.route + "/$tripId")
+                },
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
         }
         composable(
             route = Screens.PackList.route,
@@ -62,12 +69,38 @@ fun Navigation() {
                 slideInHorizontally(initialOffsetX = { -1000 }) + fadeIn()
             },
             popExitTransition = {
-                slideOutHorizontally(targetOffsetX = { 1000 }) + fadeOut()
+                slideOutHorizontally(targetOffsetX = { -1000 }) + fadeOut()
             }
         ) {
             PackListScreen {
                 navController.popBackStack()
             }
+        }
+        composable(
+            route = Screens.MapExplore.route + "/{tripId}",
+            arguments = listOf(
+                navArgument("tripId") {
+                    type = NavType.StringType
+                }
+            ),
+            enterTransition = {
+                slideInHorizontally(initialOffsetX = { 1000 }) + fadeIn()
+            },
+            exitTransition = {
+                slideOutHorizontally(targetOffsetX = { -1000 }) + fadeOut()
+            },
+            popEnterTransition = {
+                slideInHorizontally(initialOffsetX = { -1000 }) + fadeIn()
+            },
+            popExitTransition = {
+                slideOutHorizontally(targetOffsetX = { 1000 }) + fadeOut()
+            }
+        ) { backStackEntry ->
+            val tripId = backStackEntry.arguments?.getString("tripId").orEmpty()
+            MapExploreScreen(
+                tripId = tripId,
+                onBackClick = { navController.popBackStack() }
+            )
         }
     }
 }
@@ -76,4 +109,5 @@ sealed class Screens(val route : String){
     object Home : Screens("home_screen")
     object Details : Screens("details_screen")
     object PackList : Screens("pack_list_screen")
+    object MapExplore : Screens("map_explore_screen")
 }

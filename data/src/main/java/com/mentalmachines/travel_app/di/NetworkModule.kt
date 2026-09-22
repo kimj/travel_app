@@ -2,6 +2,7 @@ package com.mentalmachines.travel_app.di
 
 import com.mentalmachines.travel_app.data.BuildConfig
 import com.mentalmachines.travel_app.repository.DetailsRepository
+import com.mentalmachines.travel_app.repository.TripApi
 import com.mentalmachines.travel_app.repository.UsersRepository
 import dagger.Module
 import dagger.Provides
@@ -48,5 +49,10 @@ object NetworkModule {
     @Singleton
     fun provideUserDetailsService(retrofit: Retrofit): DetailsRepository.DetailsApi =
         retrofit.create(DetailsRepository.DetailsApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideTripApiService(retrofit: Retrofit): TripApi =
+        retrofit.create(TripApi::class.java)
 
 }

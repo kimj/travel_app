@@ -3,6 +3,7 @@ package com.mentalmachines.travel_app.di
 import android.content.Context
 import androidx.room.Room
 import com.mentalmachines.travel_app.database.AppDatabase
+import com.mentalmachines.travel_app.database.dao.TripDao
 import com.mentalmachines.travel_app.database.dao.UsersDao
 import dagger.Module
 import dagger.Provides
@@ -25,8 +26,13 @@ object DatabaseModule {
     }
 
     @Provides
-    fun provideChannelDao(appDatabase: AppDatabase): UsersDao {
+    fun provideUsersDao(appDatabase: AppDatabase): UsersDao {
         return appDatabase.usersDao
+    }
+
+    @Provides
+    fun provideTripDao(appDatabase: AppDatabase): TripDao {
+        return appDatabase.tripDao
     }
 
 }

@@ -139,6 +139,7 @@ fun TripDetailContentTemplate(
     datesText: String,
     itineraryList: List<ItineraryItem>,
     onBackClick: () -> Unit,
+    onExploreMapClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -154,6 +155,14 @@ fun TripDetailContentTemplate(
                         )
                     }
                 },
+                actions = {
+                    Button(
+                        onClick = onExploreMapClick,
+                        modifier = Modifier.padding(end = 8.dp)
+                    ) {
+                        Text("Explore Map")
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surfaceVariant
                 )
@@ -166,7 +175,6 @@ fun TripDetailContentTemplate(
                 .padding(innerPadding)
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            // Reusing atoms and molecules from HomeScreen to match visuals precisely
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -204,9 +212,10 @@ fun TripDetailContentTemplate(
 @Composable
 fun TripDetailScreen(
     tripId: String,
+    onExploreMapClick: () -> Unit,
     onBackClick: () -> Unit
 ) {
-    // Dynamic mock resolved data mapping
+    // Dynamic mock data mapping
     val destinationName = when(tripId) {
         "1" -> "Paris, France"
         "2" -> "Tokyo, Japan"
@@ -231,6 +240,7 @@ fun TripDetailScreen(
         destinationName = destinationName,
         datesText = datesText,
         itineraryList = itineraryList,
-        onBackClick = onBackClick
+        onBackClick = onBackClick,
+        onExploreMapClick = onExploreMapClick
     )
 }
