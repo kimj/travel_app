@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
@@ -14,9 +13,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.mentalmachines.travel_app.ui.components.TravelTopAppBar
 import com.mentalmachines.travel_app.ui.theme.TravelAmber
 import com.mentalmachines.travel_app.ui.theme.TravelMint
 import com.mentalmachines.travel_app.ui.theme.TravelMintLight
@@ -222,7 +221,6 @@ fun InteractiveMapViewContainer(
 // TEMPLATES
 // ============================================================================
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapExploreContentTemplate(
     places: List<InterestPlace>,
@@ -234,16 +232,9 @@ fun MapExploreContentTemplate(
     Scaffold(
         modifier = modifier,
         topBar = {
-            TopAppBar(
-                title = { Text("Explore Map Details", fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                )
+            TravelTopAppBar(
+                title = "Explore Map Details",
+                onBackClick = onBackClick
             )
         }
     ) { innerPadding ->

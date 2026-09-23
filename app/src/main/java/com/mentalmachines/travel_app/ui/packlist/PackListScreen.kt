@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,16 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-
-// ============================================================================
-// DATA MODELS
-// ============================================================================
-data class PackItemTemplate(
-    val id: String,
-    val name: String,
-    val baseQuantityPerDay: Int,
-    val category: String
-)
+import com.mentalmachines.travel_app.domain.PackItem
+import com.mentalmachines.travel_app.ui.components.TravelTopAppBar
 
 // ============================================================================
 // ATOMS
@@ -63,13 +53,15 @@ fun ItemQuantityText(
     quantity: Int,
     modifier: Modifier = Modifier
 ) {
-    Text(
-        text = "Qty: $quantity",
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.secondary,
-        fontWeight = FontWeight.SemiBold,
-        modifier = modifier
-    )
+    if (quantity > 0) {
+        Text(
+            text = "Qty: $quantity",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.secondary,
+            fontWeight = FontWeight.SemiBold,
+            modifier = modifier
+        )
+    }
 }
 
 @Composable
@@ -91,12 +83,19 @@ fun CategoryTitleText(
 
 @Composable
 fun PackListItemRow(
-    itemName: String,
-    quantity: Int,
-    isPacked: Boolean,
+    item: PackItem,
+    days: Int,
     onTogglePacked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val computedQty = if (item.type == "PerDay") {
+        maxOf(1, item.baseQuantityPerDay * days)
+    } else if (item.type == "Checklist") {
+        0
+    } else {
+        item.baseQuantityPerDay
+    }
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -104,10 +103,10 @@ fun PackListItemRow(
             .padding(vertical = 4.dp, horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        PackItemCheckbox(isPacked = isPacked, onPackedChange = { onTogglePacked() })
+        PackItemCheckbox(isPacked = item.isPacked, onPackedChange = { onTogglePacked() })
         Spacer(modifier = Modifier.width(8.dp))
-        ItemNameText(text = itemName, isPacked = isPacked, modifier = Modifier.weight(1f))
-        ItemQuantityText(quantity = quantity)
+        ItemNameText(text = item.name, isPacked = item.isPacked, modifier = Modifier.weight(1f))
+        ItemQuantityText(quantity = computedQty)
     }
 }
 
@@ -118,9 +117,8 @@ fun PackListItemRow(
 @Composable
 fun PackCategorySection(
     categoryName: String,
-    items: List<PackItemTemplate>,
+    items: List<PackItem>,
     days: Int,
-    packedItemIds: Set<String>,
     onToggleItem: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -135,11 +133,9 @@ fun PackCategorySection(
             CategoryTitleText(text = categoryName)
             Spacer(modifier = Modifier.height(8.dp))
             items.forEach { item ->
-                val computedQty = maxOf(1, item.baseQuantityPerDay * days)
                 PackListItemRow(
-                    itemName = item.name,
-                    quantity = computedQty,
-                    isPacked = packedItemIds.contains(item.id),
+                    item = item,
+                    days = days,
                     onTogglePacked = { onToggleItem(item.id) }
                 )
             }
@@ -151,13 +147,12 @@ fun PackCategorySection(
 // TEMPLATES
 // ============================================================================
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PackListContentTemplate(
     days: Int,
     onDaysChange: (Int) -> Unit,
-    itemsTemplates: List<PackItemTemplate>,
-    packedItemIds: Set<String>,
+    items: List<PackItem>,
+    isLoading: Boolean,
     onToggleItem: (String) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -165,16 +160,9 @@ fun PackListContentTemplate(
     Scaffold(
         modifier = modifier,
         topBar = {
-            TopAppBar(
-                title = { Text("Trip Packing List", style = MaterialTheme.typography.titleLarge) },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                )
+            TravelTopAppBar(
+                title = "Trip Packing List",
+                onBackClick = onBackClick
             )
         }
     ) { innerPadding ->
@@ -216,23 +204,33 @@ fun PackListContentTemplate(
                 }
             }
 
-            val categories = itemsTemplates.map { it.category }.distinct()
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                items(categories) { category ->
-                    val filteredItems = itemsTemplates.filter { it.category == category }
-                    PackCategorySection(
-                        categoryName = category,
-                        items = filteredItems,
-                        days = days,
-                        packedItemIds = packedItemIds,
-                        onToggleItem = onToggleItem
-                    )
+            if (isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                val categories = items.map { it.category }.distinct()
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(categories) { category ->
+                        val filteredItems = items.filter { it.category == category }
+                        PackCategorySection(
+                            categoryName = category,
+                            items = filteredItems,
+                            days = days,
+                            onToggleItem = onToggleItem
+                        )
+                    }
                 }
             }
         }
@@ -250,21 +248,11 @@ fun PackListScreen(
     val viewModel: PackListViewModel = hiltViewModel()
     val uiState = viewModel.uiState
 
-    val sampleTemplates = listOf(
-        PackItemTemplate("1", "T-Shirts", 1, "Clothing"),
-        PackItemTemplate("2", "Socks & Underwear", 1, "Clothing"),
-        PackItemTemplate("3", "Pants / Jeans", 2, "Clothing"),
-        PackItemTemplate("4", "Toothbrush & Paste", 1, "Toiletries"),
-        PackItemTemplate("5", "Shampoo & Bodywash", 1, "Toiletries"),
-        PackItemTemplate("6", "Phone Charger", 1, "Electronics"),
-        PackItemTemplate("7", "Universal Power Adapter", 1, "Electronics")
-    )
-
     PackListContentTemplate(
         days = uiState.days,
         onDaysChange = { viewModel.updateDays(it) },
-        itemsTemplates = sampleTemplates,
-        packedItemIds = uiState.packedItemIds,
+        items = uiState.items,
+        isLoading = uiState.isLoading,
         onToggleItem = { viewModel.toggleItem(it) },
         onBackClick = onBackClick
     )

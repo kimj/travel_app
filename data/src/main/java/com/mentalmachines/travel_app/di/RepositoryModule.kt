@@ -1,5 +1,7 @@
 package com.mentalmachines.travel_app.di
 
+import com.mentalmachines.travel_app.repository.PackListRepository
+import com.mentalmachines.travel_app.repository.PackListRepositoryImpl
 import com.mentalmachines.travel_app.repository.TripRepository
 import com.mentalmachines.travel_app.repository.TripRepositoryImpl
 import dagger.Binds
@@ -17,4 +19,10 @@ abstract class RepositoryModule {
     abstract fun bindTripRepository(
         tripRepositoryImpl: TripRepositoryImpl
     ): TripRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindPackListRepository(
+        packListRepositoryImpl: PackListRepositoryImpl
+    ): PackListRepository
 }

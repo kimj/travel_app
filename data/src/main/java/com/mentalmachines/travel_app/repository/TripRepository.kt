@@ -39,16 +39,7 @@ class TripRepositoryImpl @Inject constructor(
         emit(Resource.Loading)
         try {
             tripDao.getAllTrips().collect { entities ->
-                if (entities.isEmpty()) {
-                    val initialTrips = listOf(
-                        Trip("1", "Paris", "5 Days"),
-                        Trip("2", "Tokyo", "10 Days"),
-                        Trip("3", "Rome", "7 Days")
-                    )
-                    tripDao.insertAll(initialTrips.map { it.asEntity() })
-                } else {
-                    emit(Resource.Success(entities.asDomainModel()))
-                }
+                emit(Resource.Success(entities.asDomainModel()))
             }
         } catch (e: Exception) {
             Timber.e(e, "Error loading trips")

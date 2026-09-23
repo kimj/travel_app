@@ -5,6 +5,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -12,10 +14,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.mentalmachines.travel_app.ui.components.TravelTopAppBar
 import com.mentalmachines.travel_app.ui.theme.TravelAppTheme
 
 // ============================================================================
@@ -156,32 +160,64 @@ fun HorizontalTripRow(
 @Composable
 fun HomeContentTemplate(
     featuredTrips: List<TripUiModel>,
+    draftTrips: List<TripUiModel>,
     onTripClick: (String) -> Unit,
+    onDraftClick: (String) -> Unit,
     onPackListClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        Row(
+    Scaffold(
+        modifier = modifier,
+        topBar = {
+            TravelTopAppBar(title = "Travel App")
+        }
+    ) { innerPadding ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, top = 24.dp, end = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxSize()
+                .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
+                .background(MaterialTheme.colorScheme.background)
         ) {
             Text(
                 text = "Explore Destinations",
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onBackground
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.padding(start = 16.dp, top = 20.dp, end = 16.dp, bottom = 4.dp)
             )
-            Button(onClick = onPackListClick) {
-                Text("Pack List")
+
+            HorizontalTripRow(trips = featuredTrips, onTripClick = onTripClick)
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                Button(
+                    onClick = onPackListClick,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Pack List", style = MaterialTheme.typography.labelLarge)
+                }
             }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Text(
+                text = "Drafts",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.padding(start = 16.dp, top = 4.dp, end = 16.dp, bottom = 4.dp)
+            )
+
+            HorizontalTripRow(trips = draftTrips, onTripClick = onDraftClick)
+
+            Spacer(modifier = Modifier.height(24.dp))
         }
-        HorizontalTripRow(trips = featuredTrips, onTripClick = onTripClick)
     }
 }
 
@@ -198,10 +234,20 @@ fun HomeScreen(navController: NavController) {
         TripUiModel("4", "New York, USA", "Jan 15 - Jan 18", "")
     )
 
+    val draftTrips = listOf(
+        TripUiModel("5", "Barcelona, Spain", "Draft • 6 Days", ""),
+        TripUiModel("6", "Kyoto, Japan", "Draft • 4 Days", ""),
+        TripUiModel("7", "Reykjavik, Iceland", "Draft • 5 Days", "")
+    )
+
     HomeContentTemplate(
         featuredTrips = sampleTrips,
+        draftTrips = draftTrips,
         onTripClick = { tripId ->
             navController.navigate("details_screen/$tripId")
+        },
+        onDraftClick = { draftId ->
+            navController.navigate("draft_edit_screen/$draftId")
         },
         onPackListClick = {
             navController.navigate("pack_list_screen")
