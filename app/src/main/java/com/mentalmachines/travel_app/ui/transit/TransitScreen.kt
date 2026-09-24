@@ -7,27 +7,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.mentalmachines.travel_app.domain.StopState
+import com.mentalmachines.travel_app.domain.TransitStop
 import com.mentalmachines.travel_app.ui.components.TravelTopAppBar
-
-// ============================================================================
-// DATA MODELS
-// ============================================================================
-data class TransitStopModel(
-    val id: String,
-    val time: String,
-    val locationName: String,
-    val details: String,
-    val state: StopState
-)
-
-enum class StopState {
-    PASSED, CURRENT, UPCOMING
-}
 
 // ============================================================================
 // ATOMS
@@ -149,7 +138,7 @@ fun TransitDetailsText(
 
 @Composable
 fun TransitStopContent(
-    stop: TransitStopModel,
+    stop: TransitStop,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -172,7 +161,7 @@ fun TransitStopContent(
 
 @Composable
 fun TransitStopRow(
-    stop: TransitStopModel,
+    stop: TransitStop,
     isFirst: Boolean,
     isLast: Boolean,
     modifier: Modifier = Modifier
@@ -195,7 +184,7 @@ fun TransitStopRow(
 
 @Composable
 fun TransitRouteList(
-    transitStops: List<TransitStopModel>,
+    transitStops: List<TransitStop>,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -218,7 +207,8 @@ fun TransitRouteList(
 
 @Composable
 fun TransitContentTemplate(
-    transitStops: List<TransitStopModel>,
+    transitStops: List<TransitStop>,
+    isLoading: Boolean,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -237,7 +227,13 @@ fun TransitContentTemplate(
                 .padding(innerPadding)
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            TransitRouteList(transitStops = transitStops)
+            if (isLoading) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                TransitRouteList(transitStops = transitStops)
+            }
         }
     }
 }
@@ -248,20 +244,14 @@ fun TransitContentTemplate(
 
 @Composable
 fun TransitScreen(
-    tripId: String, // Kept to allow for viewmodel injection later
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    viewModel: TransitViewModel = hiltViewModel()
 ) {
-    // Mock data for transit route
-    val transitStops = listOf(
-        TransitStopModel("1", "08:00 AM", "Central Station", "Platform 4 • Express Train", StopState.PASSED),
-        TransitStopModel("2", "09:15 AM", "Northwood Transfer", "5 min layover", StopState.PASSED),
-        TransitStopModel("3", "10:30 AM", "Mountain Pass", "Scenic overlook stop", StopState.CURRENT),
-        TransitStopModel("4", "11:45 AM", "Valley Hub", "Bus transfer required", StopState.UPCOMING),
-        TransitStopModel("5", "01:00 PM", "Coastal Terminus", "Final Destination", StopState.UPCOMING)
-    )
+    val uiState = viewModel.uiState
 
     TransitContentTemplate(
-        transitStops = transitStops,
+        transitStops = uiState.transitStops,
+        isLoading = uiState.isLoading,
         onBackClick = onBackClick
     )
 }
