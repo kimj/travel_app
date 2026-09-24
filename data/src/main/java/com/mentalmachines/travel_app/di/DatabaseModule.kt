@@ -5,7 +5,9 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.mentalmachines.travel_app.database.AppDatabase
+import com.mentalmachines.travel_app.database.dao.ItineraryDao
 import com.mentalmachines.travel_app.database.dao.PackItemDao
+import com.mentalmachines.travel_app.database.dao.TransitStopDao
 import com.mentalmachines.travel_app.database.dao.TripDao
 import com.mentalmachines.travel_app.database.dao.UsersDao
 import dagger.Module
@@ -65,4 +67,13 @@ object DatabaseModule {
         return appDatabase.packItemDao
     }
 
+    @Provides
+    fun provideItineraryDao(appDatabase: AppDatabase): ItineraryDao {
+        return appDatabase.itineraryDao
+    }
+
+    @Provides
+    fun provideTransitStopDao(appDatabase: AppDatabase): TransitStopDao {
+        return appDatabase.transitStopDao
+    }
 }

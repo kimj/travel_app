@@ -50,7 +50,6 @@ fun Navigation() {
         ) { backStackEntry ->
             val tripId = backStackEntry.arguments?.getString("tripId").orEmpty()
             TripDetailScreen(
-                tripId = tripId,
                 onExploreMapClick = {
                     navController.navigate(Screens.MapExplore.route + "/$tripId")
                 },
@@ -157,7 +156,6 @@ fun Navigation() {
         ) { backStackEntry ->
             val tripId = backStackEntry.arguments?.getString("tripId").orEmpty()
             TransitScreen(
-                tripId = tripId,
                 onBackClick = { navController.popBackStack() }
             )
         }

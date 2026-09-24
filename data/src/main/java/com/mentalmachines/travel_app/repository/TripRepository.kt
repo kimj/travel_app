@@ -1,14 +1,19 @@
 package com.mentalmachines.travel_app.repository
 
 import com.mentalmachines.travel_app.database.Resource
+import com.mentalmachines.travel_app.database.dao.ItineraryDao
+import com.mentalmachines.travel_app.database.dao.TransitStopDao
 import com.mentalmachines.travel_app.database.dao.TripDao
 import com.mentalmachines.travel_app.database.entity.asDomainModel
 import com.mentalmachines.travel_app.database.entity.asEntity
+import com.mentalmachines.travel_app.domain.DaySchedule
+import com.mentalmachines.travel_app.domain.TransitStop
 import com.mentalmachines.travel_app.domain.Trip
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import retrofit2.http.GET
 import timber.log.Timber
 import javax.inject.Inject
@@ -23,6 +28,10 @@ interface TripRepository {
 
     fun getTripById(tripId: String): Flow<Resource<Trip>>
 
+    fun getTripSchedules(tripId: String): Flow<List<DaySchedule>>
+
+    fun getTransitStops(tripId: String): Flow<List<TransitStop>>
+
     suspend fun addTrip(trip: Trip): Result<Unit>
 
     suspend fun deleteTrip(tripId: String): Result<Unit>
@@ -32,6 +41,8 @@ interface TripRepository {
 
 class TripRepositoryImpl @Inject constructor(
     private val tripDao: TripDao,
+    private val itineraryDao: ItineraryDao,
+    private val transitStopDao: TransitStopDao,
     private val tripService: TripApi,
 ) : TripRepository {
 
@@ -62,6 +73,28 @@ class TripRepositoryImpl @Inject constructor(
             emit(Resource.Error("Could not load trip", e))
         }
     }.flowOn(Dispatchers.IO)
+
+    override fun getTripSchedules(tripId: String): Flow<List<DaySchedule>> {
+        return itineraryDao.getItineraryForTrip(tripId)
+            .map { entities ->
+                entities.groupBy { it.dayNumber }
+                    .map { (dayNum, itemsForDay) ->
+                        DaySchedule(
+                            dayNumber = dayNum,
+                            dateText = itemsForDay.firstOrNull()?.dateText ?: "Day $dayNum",
+                            items = itemsForDay.asDomainModel()
+                        )
+                    }
+                    .sortedBy { it.dayNumber }
+            }
+            .flowOn(Dispatchers.IO)
+    }
+
+    override fun getTransitStops(tripId: String): Flow<List<TransitStop>> {
+        return transitStopDao.getTransitStopsForTrip(tripId)
+            .map { entities -> entities.asDomainModel() }
+            .flowOn(Dispatchers.IO)
+    }
 
     override suspend fun addTrip(trip: Trip): Result<Unit> {
         return try {

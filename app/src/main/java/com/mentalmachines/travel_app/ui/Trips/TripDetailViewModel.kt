@@ -7,82 +7,62 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mentalmachines.travel_app.database.Resource
+import com.mentalmachines.travel_app.domain.DaySchedule
 import com.mentalmachines.travel_app.domain.Trip
-// import com.mentalmachines.TravelApp.repository.DetailsRepository
-import com.mentalmachines.travel_app.ui.Argument
-import com.mentalmachines.travel_app.repository.DetailsRepository
 import com.mentalmachines.travel_app.repository.TripRepository
-import com.mentalmachines.travel_app.ui.details.DetailsUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
+
+data class TripDetailUiState(
+    val trip: Trip? = null,
+    val dailySchedules: List<DaySchedule> = emptyList(),
+    val isLoading: Boolean = true,
+    val errorMessage: String? = null
+)
 
 @HiltViewModel
 class TripDetailViewModel @Inject constructor(
-    private val detailsRepository: DetailsRepository,
+    private val tripRepository: TripRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val username: String? = savedStateHandle[Argument.USERNAME]
-    var uiState by mutableStateOf(DetailsUiState())
+    private val tripId: String = savedStateHandle["tripId"] ?: ""
+
+    var uiState by mutableStateOf(TripDetailUiState())
         private set
 
-
-    sealed interface UiEvent {
-        data class ShowSnackbar(val message: String) : UiEvent
-        data class NavigateTo(val route: String) : UiEvent
-    }
-
-    private val _events = Channel<UiEvent>(Channel.BUFFERED)
-    val events = _events.receiveAsFlow()
-
-    fun onSaveClicked(id: String) = viewModelScope.launch {
-        detailsRepository.save(id)                         // business logic
-        _events.send(UiEvent.ShowSnackbar("Saved"))
-        _events.send(UiEvent.NavigateTo("details/$id"))
-    }
-
     init {
-        username?.let {
-            viewModelScope.launch(Dispatchers.IO) {
-                detailsRepository.refreshDetails(it)
-                detailsRepository.getUserDetails(it).collect { detail ->
-                    withContext(Dispatchers.Main) {
-                        uiState = if (detail == null) {
-                            uiState.copy(offline = true)
-                        } else {
-                            uiState.copy(
-                                detail = detail,
-                                offline = false
-                            )
-                        }
+        loadTripDetails()
+        loadTripSchedules()
+    }
+
+    private fun loadTripDetails() {
+        if (tripId.isBlank()) return
+        viewModelScope.launch {
+            tripRepository.getTripById(tripId).collect { result ->
+                when (result) {
+                    is Resource.Success -> {
+                        uiState = uiState.copy(trip = result.data, isLoading = false)
+                    }
+                    is Resource.Error -> {
+                        uiState = uiState.copy(errorMessage = result.message, isLoading = false)
+                    }
+                    Resource.Loading -> {
+                        uiState = uiState.copy(isLoading = true)
                     }
                 }
             }
         }
     }
 
-}
-
-class TripViewModel(private val repository: TripRepository) : ViewModel() {
-
-    private val _tripsState = MutableStateFlow<Resource<List<Trip>>>(Resource.Loading)
-    val tripsState = _tripsState.asStateFlow()
-
-    init {
-        fetchTrips()
-    }
-
-    fun fetchTrips() {
+    private fun loadTripSchedules() {
+        if (tripId.isBlank()) return
         viewModelScope.launch {
-            repository.getAllTrips().collect { result ->
-                _tripsState.value = result
+            tripRepository.getTripSchedules(tripId).collect { schedules ->
+                uiState = uiState.copy(dailySchedules = schedules)
             }
         }
     }

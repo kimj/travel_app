@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 import com.mentalmachines.travel_app.domain.Details
 
 @Entity(tableName = "details")
-data class DetailsEntity constructor(
+data class DetailsEntity(
     @PrimaryKey
     val user: String,
     val avatar: String,

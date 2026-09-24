@@ -1,23 +1,36 @@
 package com.mentalmachines.travel_app.database
 
 import androidx.room.*
+import com.mentalmachines.travel_app.database.dao.ItineraryDao
 import com.mentalmachines.travel_app.database.dao.PackItemDao
+import com.mentalmachines.travel_app.database.dao.TransitStopDao
 import com.mentalmachines.travel_app.database.dao.TripDao
 import com.mentalmachines.travel_app.database.dao.UsersDao
 import com.mentalmachines.travel_app.database.entity.DetailsEntity
+import com.mentalmachines.travel_app.database.entity.ItineraryItemEntity
 import com.mentalmachines.travel_app.database.entity.PackItemEntity
+import com.mentalmachines.travel_app.database.entity.TransitStopEntity
 import com.mentalmachines.travel_app.database.entity.TripEntity
 import com.mentalmachines.travel_app.database.entity.UserEntity
 
 @Database(
-    entities = [UserEntity::class, TripEntity::class, DetailsEntity::class, PackItemEntity::class],
-    version = 2,
+    entities = [
+        UserEntity::class, 
+        TripEntity::class, 
+        DetailsEntity::class, 
+        PackItemEntity::class,
+        ItineraryItemEntity::class,
+        TransitStopEntity::class
+    ],
+    version = 4,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract val usersDao: UsersDao
     abstract val tripDao: TripDao
     abstract val packItemDao: PackItemDao
+    abstract val itineraryDao: ItineraryDao
+    abstract val transitStopDao: TransitStopDao
 }
 
 

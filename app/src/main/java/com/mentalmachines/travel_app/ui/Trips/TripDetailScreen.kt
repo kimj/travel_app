@@ -11,24 +11,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.mentalmachines.travel_app.domain.DaySchedule
+import com.mentalmachines.travel_app.domain.ItineraryItem
 import com.mentalmachines.travel_app.ui.components.TravelTopAppBar
 import com.mentalmachines.travel_app.ui.home.LocationImage
 import com.mentalmachines.travel_app.ui.home.LocationDetailsOverlay
-
-// ============================================================================
-// DATA MODELS
-// ============================================================================
-data class ItineraryItem(
-    val id: String,
-    val stopLocation: String,
-    val timeRange: String
-)
-
-data class DaySchedule(
-    val dayNumber: Int,
-    val dateText: String,
-    val items: List<ItineraryItem>
-)
 
 // ============================================================================
 // ATOMS
@@ -177,9 +165,10 @@ fun TripDetailContentTemplate(
     destinationName: String,
     datesText: String,
     dailySchedules: List<DaySchedule>,
+    isLoading: Boolean,
     onBackClick: () -> Unit,
     onExploreMapClick: () -> Unit,
-     onTransitClick: () -> Unit,
+    onTransitClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -230,10 +219,16 @@ fun TripDetailContentTemplate(
                 modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 4.dp)
             )
 
-            DailyScheduleList(
-                dailySchedules = dailySchedules,
-                modifier = Modifier.weight(1f)
-            )
+            if (isLoading) {
+                Box(modifier = Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                DailyScheduleList(
+                    dailySchedules = dailySchedules,
+                    modifier = Modifier.weight(1f)
+                )
+            }
         }
     }
 }
@@ -244,120 +239,21 @@ fun TripDetailContentTemplate(
 
 @Composable
 fun TripDetailScreen(
-    tripId: String,
     onExploreMapClick: () -> Unit,
     onTransitClick: () -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    viewModel: TripDetailViewModel = hiltViewModel()
 ) {
-    val destinationName = when(tripId) {
-        "1" -> "Paris, France"
-        "2" -> "Tokyo, Japan"
-        "3" -> "Rome, Italy"
-        else -> "New York, USA"
-    }
-    val datesText = when(tripId) {
-        "1" -> "Oct 12 - Oct 19"
-        "2" -> "Nov 02 - Nov 12"
-        "3" -> "Dec 05 - Dec 10"
-        else -> "Jan 15 - Jan 18"
-    }
+    val uiState = viewModel.uiState
 
-    val dailySchedules = when(tripId) {
-        "1" -> listOf(
-            DaySchedule(
-                dayNumber = 1,
-                dateText = "Oct 12 • Arrival & Eiffel Tower",
-                items = listOf(
-                    ItineraryItem("1", "Morning Flight & Hotel Check-in", "08:00 AM - 01:00 PM"),
-                    ItineraryItem("2", "Eiffel Tower Guided Walk & Photo Stop", "03:00 PM - 06:00 PM"),
-                    ItineraryItem("3", "Welcome Dinner at Seine River Bistro", "07:30 PM - 09:30 PM")
-                )
-            ),
-            DaySchedule(
-                dayNumber = 2,
-                dateText = "Oct 13 • Art & Culture",
-                items = listOf(
-                    ItineraryItem("4", "Louvre Museum Guided Tour", "09:30 AM - 01:00 PM"),
-                    ItineraryItem("5", "Montmartre & Sacré-Cœur Stroll", "02:30 PM - 05:30 PM")
-                )
-            ),
-            DaySchedule(
-                dayNumber = 3,
-                dateText = "Oct 14 • Day Trip & Jazz Night",
-                items = listOf(
-                    ItineraryItem("6", "Palace of Versailles Excursion", "08:30 AM - 04:00 PM"),
-                    ItineraryItem("7", "Evening Jazz Club in Le Marais", "08:00 PM - 10:30 PM")
-                )
-            )
-        )
-        "2" -> listOf(
-            DaySchedule(
-                dayNumber = 1,
-                dateText = "Nov 02 • Shinjuku Arrival",
-                items = listOf(
-                    ItineraryItem("8", "Arrival at Narita & Shinjuku Check-in", "10:00 AM - 02:00 PM"),
-                    ItineraryItem("9", "Omoide Yokocho Evening Food Tour", "06:00 PM - 09:00 PM")
-                )
-            ),
-            DaySchedule(
-                dayNumber = 2,
-                dateText = "Nov 03 • Historic Asakusa & Akihabara",
-                items = listOf(
-                    ItineraryItem("10", "Asakusa Senso-ji Temple & Nakamise St", "09:00 AM - 12:30 PM"),
-                    ItineraryItem("11", "Akihabara Tech & Manga Exploration", "02:00 PM - 06:00 PM")
-                )
-            ),
-            DaySchedule(
-                dayNumber = 3,
-                dateText = "Nov 04 • Harajuku & Shibuya",
-                items = listOf(
-                    ItineraryItem("12", "Meiji Shrine & Harajuku Takeshita St", "10:00 AM - 01:30 PM"),
-                    ItineraryItem("13", "Shibuya Crossing & Rooftop View", "04:00 PM - 07:30 PM")
-                )
-            )
-        )
-        "3" -> listOf(
-            DaySchedule(
-                dayNumber = 1,
-                dateText = "Dec 05 • Historic Center Arrival",
-                items = listOf(
-                    ItineraryItem("14", "Arrival & Trastevere Walk", "11:00 AM - 03:00 PM"),
-                    ItineraryItem("15", "Traditional Roman Pasta Dinner", "07:00 PM - 09:00 PM")
-                )
-            ),
-            DaySchedule(
-                dayNumber = 2,
-                dateText = "Dec 06 • Ancient Wonders",
-                items = listOf(
-                    ItineraryItem("16", "Colosseum & Roman Forum Tour", "09:00 AM - 01:00 PM"),
-                    ItineraryItem("17", "Trevi Fountain & Pantheon Stroll", "03:00 PM - 06:00 PM")
-                )
-            )
-        )
-        else -> listOf(
-            DaySchedule(
-                dayNumber = 1,
-                dateText = "Jan 15 • Manhattan Arrival",
-                items = listOf(
-                    ItineraryItem("18", "Hotel Check-in & Times Square Walk", "01:00 PM - 04:00 PM"),
-                    ItineraryItem("19", "Broadway Evening Show", "07:00 PM - 10:00 PM")
-                )
-            ),
-            DaySchedule(
-                dayNumber = 2,
-                dateText = "Jan 16 • Central Park & Museums",
-                items = listOf(
-                    ItineraryItem("20", "Central Park Walk & MET Museum", "09:30 AM - 02:00 PM"),
-                    ItineraryItem("21", "Empire State Building Night View", "06:30 PM - 08:30 PM")
-                )
-            )
-        )
-    }
+    val destinationName = uiState.trip?.destination ?: "Loading..."
+    val datesText = uiState.trip?.duration ?: ""
 
     TripDetailContentTemplate(
         destinationName = destinationName,
         datesText = datesText,
-        dailySchedules = dailySchedules,
+        dailySchedules = uiState.dailySchedules,
+        isLoading = uiState.isLoading,
         onBackClick = onBackClick,
         onExploreMapClick = onExploreMapClick,
         onTransitClick = onTransitClick

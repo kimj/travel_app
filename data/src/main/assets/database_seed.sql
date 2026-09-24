@@ -17,6 +17,50 @@ INSERT OR REPLACE INTO details (user, avatar, name, userSince, location) VALUES
 ('sarah_adventures', 'avatar_2.png', 'Sarah Connor', '2022', 'Tokyo, Japan'),
 ('marco_polo', 'avatar_3.png', 'Marco Polo', '2020', 'Rome, Italy');
 
+-- Itinerary Items Seed Data
+-- Trip 1: Paris
+INSERT OR REPLACE INTO itinerary_items (id, tripId, dayNumber, dateText, stopLocation, timeRange) VALUES
+('101', '1', 1, 'Oct 12 • Arrival & Eiffel Tower', 'Morning Flight & Hotel Check-in', '08:00 AM - 01:00 PM'),
+('102', '1', 1, 'Oct 12 • Arrival & Eiffel Tower', 'Eiffel Tower Guided Walk & Photo Stop', '03:00 PM - 06:00 PM'),
+('103', '1', 1, 'Oct 12 • Arrival & Eiffel Tower', 'Welcome Dinner at Seine River Bistro', '07:30 PM - 09:30 PM'),
+('104', '1', 2, 'Oct 13 • Art & Culture', 'Louvre Museum Guided Tour', '09:30 AM - 01:00 PM'),
+('105', '1', 2, 'Oct 13 • Art & Culture', 'Montmartre & Sacré-Cœur Stroll', '02:30 PM - 05:30 PM'),
+('106', '1', 3, 'Oct 14 • Day Trip & Jazz Night', 'Palace of Versailles Excursion', '08:30 AM - 04:00 PM'),
+('107', '1', 3, 'Oct 14 • Day Trip & Jazz Night', 'Evening Jazz Club in Le Marais', '08:00 PM - 10:30 PM');
+
+-- Trip 2: Tokyo
+INSERT OR REPLACE INTO itinerary_items (id, tripId, dayNumber, dateText, stopLocation, timeRange) VALUES
+('201', '2', 1, 'Nov 02 • Shinjuku Arrival', 'Arrival at Narita & Shinjuku Check-in', '10:00 AM - 02:00 PM'),
+('202', '2', 1, 'Nov 02 • Shinjuku Arrival', 'Omoide Yokocho Evening Food Tour', '06:00 PM - 09:00 PM'),
+('203', '2', 2, 'Nov 03 • Historic Asakusa & Akihabara', 'Asakusa Senso-ji Temple & Nakamise St', '09:00 AM - 12:30 PM'),
+('204', '2', 2, 'Nov 03 • Historic Asakusa & Akihabara', 'Akihabara Tech & Manga Exploration', '02:00 PM - 06:00 PM'),
+('205', '2', 3, 'Nov 04 • Harajuku & Shibuya', 'Meiji Shrine & Harajuku Takeshita St', '10:00 AM - 01:30 PM'),
+('206', '2', 3, 'Nov 04 • Harajuku & Shibuya', 'Shibuya Crossing & Rooftop View', '04:00 PM - 07:30 PM');
+
+-- Trip 3: Rome
+INSERT OR REPLACE INTO itinerary_items (id, tripId, dayNumber, dateText, stopLocation, timeRange) VALUES
+('301', '3', 1, 'Dec 05 • Historic Center Arrival', 'Arrival & Trastevere Walk', '11:00 AM - 03:00 PM'),
+('302', '3', 1, 'Dec 05 • Historic Center Arrival', 'Traditional Roman Pasta Dinner', '07:00 PM - 09:00 PM'),
+('303', '3', 2, 'Dec 06 • Ancient Wonders', 'Colosseum & Roman Forum Tour', '09:00 AM - 01:00 PM'),
+('304', '3', 2, 'Dec 06 • Ancient Wonders', 'Trevi Fountain & Pantheon Stroll', '03:00 PM - 06:00 PM');
+
+-- Trip 4: New York
+INSERT OR REPLACE INTO itinerary_items (id, tripId, dayNumber, dateText, stopLocation, timeRange) VALUES
+('401', '4', 1, 'Jan 15 • Manhattan Arrival', 'Hotel Check-in & Times Square Walk', '01:00 PM - 04:00 PM'),
+('402', '4', 1, 'Jan 15 • Manhattan Arrival', 'Broadway Evening Show', '07:00 PM - 10:00 PM'),
+('403', '4', 2, 'Jan 16 • Central Park & Museums', 'Central Park Walk & MET Museum', '09:30 AM - 02:00 PM'),
+('404', '4', 2, 'Jan 16 • Central Park & Museums', 'Empire State Building Night View', '06:30 PM - 08:30 PM');
+
+
+-- Transit Stops Seed Data
+-- Mock Transit route assigned to Trip 1 (Paris)
+INSERT OR REPLACE INTO transit_stops (id, tripId, time, locationName, details, state) VALUES
+('1', '1', '08:00 AM', 'Central Station', 'Platform 4 • Express Train', 'PASSED'),
+('2', '1', '09:15 AM', 'Northwood Transfer', '5 min layover', 'PASSED'),
+('3', '1', '10:30 AM', 'Mountain Pass', 'Scenic overlook stop', 'CURRENT'),
+('4', '1', '11:45 AM', 'Valley Hub', 'Bus transfer required', 'UPCOMING'),
+('5', '1', '01:00 PM', 'Coastal Terminus', 'Final Destination', 'UPCOMING');
+
 -- Pack Items Seed Data
 INSERT OR REPLACE INTO pack_items (id, name, type, category, baseQuantityPerDay, isPacked) VALUES
 ('1', 'Underwear', 'PerDay', 'Clothing', 1, 0),
