@@ -1,4 +1,4 @@
-package com.mentalmachines.travel_app.ui.Trips
+package com.mentalmachines.travel_app.ui.trips
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

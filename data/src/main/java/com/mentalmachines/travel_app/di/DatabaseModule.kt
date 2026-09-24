@@ -5,6 +5,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.mentalmachines.travel_app.database.AppDatabase
+import com.mentalmachines.travel_app.database.dao.InterestPlaceDao
 import com.mentalmachines.travel_app.database.dao.ItineraryDao
 import com.mentalmachines.travel_app.database.dao.PackItemDao
 import com.mentalmachines.travel_app.database.dao.TransitStopDao
@@ -33,19 +34,30 @@ object DatabaseModule {
         .addCallback(object : RoomDatabase.Callback() {
             override fun onCreate(db: SupportSQLiteDatabase) {
                 super.onCreate(db)
+                Timber.d("Starting database prepopulation...")
                 try {
                     val sqlScript = appContext.assets.open("database_seed.sql")
                         .bufferedReader()
                         .use { it.readText() }
                     
-                    sqlScript.split(";")
+                    // Strip SQL comments before splitting by semicolon
+                    val cleanSql = sqlScript.lines()
+                        .filter { !it.trimStart().startsWith("--") }
+                        .joinToString("\n")
+                        
+                    cleanSql.split(";")
                         .map { it.trim() }
                         .filter { it.isNotEmpty() }
                         .forEach { sqlStatement ->
-                            db.execSQL(sqlStatement)
+                            try {
+                                db.execSQL(sqlStatement)
+                            } catch (e: Exception) {
+                                Timber.e(e, "Failed executing SQL statement: \$sqlStatement")
+                            }
                         }
+                    Timber.d("Finished database prepopulation.")
                 } catch (e: Exception) {
-                    Timber.e(e, "Error populating database from SQL asset script")
+                    Timber.e(e, "Error reading database_seed.sql asset script")
                 }
             }
         })
@@ -75,5 +87,10 @@ object DatabaseModule {
     @Provides
     fun provideTransitStopDao(appDatabase: AppDatabase): TransitStopDao {
         return appDatabase.transitStopDao
+    }
+
+    @Provides
+    fun provideInterestPlaceDao(appDatabase: AppDatabase): InterestPlaceDao {
+        return appDatabase.interestPlaceDao
     }
 }

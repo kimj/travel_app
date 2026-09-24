@@ -33,6 +33,6 @@ class PackListRepositoryImpl @Inject constructor(
     }
 
     override suspend fun seedInitialItemsIfEmpty() {
-        // Prepopulation is handled directly by Room DatabaseCallback using assets/pack_items.sql
+        // Prepopulation is handled directly by Room DatabaseCallback using assets
     }
 }

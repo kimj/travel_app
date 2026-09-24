@@ -15,24 +15,11 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.mentalmachines.travel_app.domain.InterestPlace
 import com.mentalmachines.travel_app.ui.components.TravelTopAppBar
 import com.mentalmachines.travel_app.ui.theme.TravelAmber
 import com.mentalmachines.travel_app.ui.theme.TravelMint
 import com.mentalmachines.travel_app.ui.theme.TravelMintLight
-
-// ============================================================================
-// DATA MODELS
-// ============================================================================
-data class InterestPlace(
-    val id: String,
-    val name: String,
-    val foodType: String,
-    val rating: Double,
-    val pricePoint: String,
-    val tags: List<String>,
-    val offsetX: Int,
-    val offsetY: Int
-)
 
 // ============================================================================
 // ATOMS
@@ -225,6 +212,7 @@ fun InteractiveMapViewContainer(
 fun MapExploreContentTemplate(
     places: List<InterestPlace>,
     selectedPlace: InterestPlace?,
+    isLoading: Boolean,
     onPlaceSelect: (InterestPlace) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -243,20 +231,26 @@ fun MapExploreContentTemplate(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            InteractiveMapViewContainer(
-                places = places,
-                selectedPlaceId = selectedPlace?.id,
-                onPlaceSelect = onPlaceSelect,
-                modifier = Modifier.fillMaxSize()
-            )
-
-            if (selectedPlace != null) {
-                PlaceDetailOverlayCard(
-                    place = selectedPlace,
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(16.dp)
+            if (isLoading) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                InteractiveMapViewContainer(
+                    places = places,
+                    selectedPlaceId = selectedPlace?.id,
+                    onPlaceSelect = onPlaceSelect,
+                    modifier = Modifier.fillMaxSize()
                 )
+
+                if (selectedPlace != null) {
+                    PlaceDetailOverlayCard(
+                        place = selectedPlace,
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(16.dp)
+                    )
+                }
             }
         }
     }
@@ -277,6 +271,7 @@ fun MapExploreScreen(
     MapExploreContentTemplate(
         places = uiState.places,
         selectedPlace = uiState.selectedPlace,
+        isLoading = uiState.isLoading,
         onPlaceSelect = { viewModel.selectPlace(it) },
         onBackClick = onBackClick
     )

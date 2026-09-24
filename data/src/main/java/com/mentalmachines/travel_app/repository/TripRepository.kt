@@ -1,12 +1,14 @@
 package com.mentalmachines.travel_app.repository
 
 import com.mentalmachines.travel_app.database.Resource
+import com.mentalmachines.travel_app.database.dao.InterestPlaceDao
 import com.mentalmachines.travel_app.database.dao.ItineraryDao
 import com.mentalmachines.travel_app.database.dao.TransitStopDao
 import com.mentalmachines.travel_app.database.dao.TripDao
 import com.mentalmachines.travel_app.database.entity.asDomainModel
 import com.mentalmachines.travel_app.database.entity.asEntity
 import com.mentalmachines.travel_app.domain.DaySchedule
+import com.mentalmachines.travel_app.domain.InterestPlace
 import com.mentalmachines.travel_app.domain.TransitStop
 import com.mentalmachines.travel_app.domain.Trip
 import kotlinx.coroutines.Dispatchers
@@ -32,6 +34,8 @@ interface TripRepository {
 
     fun getTransitStops(tripId: String): Flow<List<TransitStop>>
 
+    fun getInterestPlaces(tripId: String): Flow<List<InterestPlace>>
+
     suspend fun addTrip(trip: Trip): Result<Unit>
 
     suspend fun deleteTrip(tripId: String): Result<Unit>
@@ -43,6 +47,7 @@ class TripRepositoryImpl @Inject constructor(
     private val tripDao: TripDao,
     private val itineraryDao: ItineraryDao,
     private val transitStopDao: TransitStopDao,
+    private val interestPlaceDao: InterestPlaceDao,
     private val tripService: TripApi,
 ) : TripRepository {
 
@@ -92,6 +97,12 @@ class TripRepositoryImpl @Inject constructor(
 
     override fun getTransitStops(tripId: String): Flow<List<TransitStop>> {
         return transitStopDao.getTransitStopsForTrip(tripId)
+            .map { entities -> entities.asDomainModel() }
+            .flowOn(Dispatchers.IO)
+    }
+
+    override fun getInterestPlaces(tripId: String): Flow<List<InterestPlace>> {
+        return interestPlaceDao.getPlacesForTrip(tripId)
             .map { entities -> entities.asDomainModel() }
             .flowOn(Dispatchers.IO)
     }

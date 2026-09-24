@@ -1,15 +1,15 @@
--- Trips Seed Data
-INSERT OR REPLACE INTO trips (id, destination, duration) VALUES
-('1', 'Paris, France', '5 Days'),
-('2', 'Tokyo, Japan', '10 Days'),
-('3', 'Rome, Italy', '7 Days'),
-('4', 'New York, USA', '4 Days');
-
 -- Users Seed Data
 INSERT OR REPLACE INTO users (id, avatar, username) VALUES
 (1, 'avatar_1.png', 'alex_traveler'),
 (2, 'avatar_2.png', 'sarah_adventures'),
 (3, 'avatar_3.png', 'marco_polo');
+
+-- Trips Seed Data
+INSERT OR REPLACE INTO trips (id, userId, destination, duration) VALUES
+('1', 1, 'Paris, France', '5 Days'),
+('2', 1, 'Tokyo, Japan', '10 Days'),
+('3', 1, 'Rome, Italy', '7 Days'),
+('4', 1, 'New York, USA', '4 Days');
 
 -- Details Seed Data
 INSERT OR REPLACE INTO details (user, avatar, name, userSince, location) VALUES
@@ -60,6 +60,23 @@ INSERT OR REPLACE INTO transit_stops (id, tripId, time, locationName, details, s
 ('3', '1', '10:30 AM', 'Mountain Pass', 'Scenic overlook stop', 'CURRENT'),
 ('4', '1', '11:45 AM', 'Valley Hub', 'Bus transfer required', 'UPCOMING'),
 ('5', '1', '01:00 PM', 'Coastal Terminus', 'Final Destination', 'UPCOMING');
+
+-- Interest Places Seed Data
+-- Map Explore Locations assigned to Trip 1 (Paris)
+INSERT OR REPLACE INTO interest_places (id, tripId, name, foodType, rating, pricePoint, tags, offsetX, offsetY) VALUES
+('1', '1', 'Le Bistrot Gourmand', 'Traditional French', 4.8, '€€€', 'Recommended, Romantic, Outdoor Seating', 60, 120),
+('2', '1', 'Sushi Kyoto Star', 'Authentic Japanese', 4.9, '€€€€', 'Top Rated, Fresh Fish, Chef''s Menu', 180, 260),
+('3', '1', 'Pizzeria Roma Bella', 'Classic Italian Pizza', 4.6, '€€', 'Family Friendly, Wood Oven, Fast Service', 120, 420);
+
+-- Map Explore Locations assigned to Trip 2 (Tokyo)
+INSERT OR REPLACE INTO interest_places (id, tripId, name, foodType, rating, pricePoint, tags, offsetX, offsetY) VALUES
+('4', '2', 'Ramen Ichiran', 'Ramen', 4.7, '¥¥', 'Quick Bite, Solo Dining, Hot & Spicy', 100, 150),
+('5', '2', 'Omoide Yokocho BBQ', 'Yakitori', 4.6, '¥¥', 'Street Food, Local Vibes, Drinks', 200, 300);
+
+-- Map Explore Locations assigned to Trip 3 (Rome)
+INSERT OR REPLACE INTO interest_places (id, tripId, name, foodType, rating, pricePoint, tags, offsetX, offsetY) VALUES
+('6', '3', 'Osteria Da Fortunata', 'Roman Pasta', 4.8, '€€', 'Fresh Pasta, Authentic, Central', 150, 200),
+('7', '3', 'Giolitti', 'Gelato', 4.7, '€', 'Dessert, Historic, Popular', 250, 350);
 
 -- Pack Items Seed Data
 INSERT OR REPLACE INTO pack_items (id, name, type, category, baseQuantityPerDay, isPacked) VALUES

@@ -11,8 +11,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.mentalmachines.travel_app.ui.home.HomeScreen
-import com.mentalmachines.travel_app.ui.Trips.TripDetailScreen
-import com.mentalmachines.travel_app.ui.Trips.TripDraftEditScreen
+import com.mentalmachines.travel_app.ui.trips.TripDetailScreen
+import com.mentalmachines.travel_app.ui.trips.TripDraftEditScreen
 import com.mentalmachines.travel_app.ui.packlist.PackListScreen
 import com.mentalmachines.travel_app.ui.map.MapExploreScreen
 import com.mentalmachines.travel_app.ui.transit.TransitScreen
