@@ -6,8 +6,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-// import com.mentalmachines.TravelApp.repository.DetailsRepository
-import com.mentalmachines.travel_app.ui.Argument
 import com.mentalmachines.travel_app.repository.DetailsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +21,7 @@ class HomeScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val username: String? = savedStateHandle[Argument.USERNAME]
+    private val username: String? = savedStateHandle["USERNAME"]
     var uiState by mutableStateOf(HomeScreenUiState())
         private set
 
